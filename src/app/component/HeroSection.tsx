@@ -37,6 +37,16 @@ const unitMap: Record<string, string> = {
   piece: "প্রতি পিস",
 };
 
+const DateDisplay = () => {
+  return (
+    <span suppressHydrationWarning>
+      {new Date().toLocaleDateString("bn-BD", {
+        dateStyle: "full",
+      })}
+    </span>
+  );
+};
+
 const SkeletonGrid = () => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {Array.from({ length: 6 }).map((_, i) => (
@@ -115,18 +125,11 @@ const ProductGrid = ({
 );
 
 const HeroSection = () => {
-  const [date, setDate] = useState("");
   const [increasedProducts, setIncreasedProducts] = useState<Product[]>([]);
   const [decreasedProducts, setDecreasedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const formattedDate = new Date().toLocaleDateString("bn-BD", {
-      dateStyle: "full",
-    });
-
-    setDate(formattedDate);
-
     const fetchProducts = async () => {
       try {
         const res = await fetch(
@@ -164,7 +167,7 @@ const HeroSection = () => {
       <div className="bg-[#f2f7f4] rounded-3xl p-6 sm:p-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 border border-gray-100">
         <div className="space-y-4 max-w-2xl text-left">
           <div className="inline-block bg-[#e2f0e8] text-[#16A34A] text-xs font-semibold px-3 py-1.5 rounded-full">
-            {date || "বৃহস্পতিবার, ৮ অক্টোবর, ২০২৬"}
+            <DateDisplay />
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
