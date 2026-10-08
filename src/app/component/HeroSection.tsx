@@ -37,16 +37,97 @@ const unitMap: Record<string, string> = {
   piece: "প্রতি পিস",
 };
 
-const HeroSection = () => {
-  const [increasedProducts, setIncreasedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+const SkeletonGrid = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {Array.from({ length: 6 }).map((_, i) => (
+      <div
+        key={i}
+        className="h-32 bg-gray-100 animate-pulse rounded-2xl border border-gray-200/60"
+      />
+    ))}
+  </div>
+);
 
-  const todayDate = new Date().toLocaleDateString("bn-BD", {
-    dateStyle: "full",
-  });
+const ProductGrid = ({
+  products,
+  isIncrease,
+}: {
+  products: Product[];
+  isIncrease: boolean;
+}) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {products.map((product) => {
+      const displayUnit =
+        unitMap[product.unit] || `প্রতি ${product.unit}`;
+
+      const icon = product.image || product.categoryIcon || "📦";
+
+      return (
+        <div
+          key={product.id}
+          className="bg-[#f8fbf9] border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-sm transition-shadow duration-200"
+        >
+          <div className="flex items-start gap-3">
+            <div className="text-3xl bg-white p-2 rounded-xl border border-gray-100 shadow-2xs">
+              {icon}
+            </div>
+
+            <div>
+              <h3 className="font-bold text-gray-900 text-base">
+                {product.nameBn}
+              </h3>
+
+              <p className="text-xs text-gray-500 font-medium">
+                {displayUnit}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-end justify-between pt-4 mt-2 border-t border-gray-200/40">
+            <div>
+              <span className="text-[11px] text-gray-500 block font-medium">
+                আজকের দাম
+              </span>
+
+              <span className="text-lg font-extrabold text-gray-900">
+                {toBengaliNumeral(product.today)} টাকা
+              </span>
+            </div>
+
+            <div
+              className={`text-xs font-bold px-2 py-1 rounded-md flex items-center gap-0.5 ${
+                isIncrease
+                  ? "bg-red-50 text-red-600"
+                  : "bg-emerald-50 text-emerald-600"
+              }`}
+            >
+              <span>{isIncrease ? "▲" : "▼"}</span>
+
+              <span>
+                {toBengaliNumeral(Math.abs(product.change?.pct || 0))}%
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+);
+
+const HeroSection = () => {
+  const [date, setDate] = useState("");
+  const [increasedProducts, setIncreasedProducts] = useState<Product[]>([]);
+  const [decreasedProducts, setDecreasedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchIncreasedProducts = async () => {
+    const formattedDate = new Date().toLocaleDateString("bn-BD", {
+      dateStyle: "full",
+    });
+
+    setDate(formattedDate);
+
+    const fetchProducts = async () => {
       try {
         const res = await fetch(
           "https://api.api-store.workers.dev/api/bazardor/products"
@@ -58,11 +139,16 @@ const HeroSection = () => {
           ? data
           : data.data || [];
 
-        const filtered = items.filter(
+        const increased = items.filter(
           (p) => p.change?.dir === "up" || p.change?.pct > 0
         );
 
-        setIncreasedProducts(filtered);
+        const decreased = items.filter(
+          (p) => p.change?.dir === "down" || p.change?.pct < 0
+        );
+
+        setIncreasedProducts(increased);
+        setDecreasedProducts(decreased);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -70,16 +156,15 @@ const HeroSection = () => {
       }
     };
 
-    fetchIncreasedProducts();
+    fetchProducts();
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-      {/* Hero Banner */}
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       <div className="bg-[#f2f7f4] rounded-3xl p-6 sm:p-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 border border-gray-100">
         <div className="space-y-4 max-w-2xl text-left">
           <div className="inline-block bg-[#e2f0e8] text-[#16A34A] text-xs font-semibold px-3 py-1.5 rounded-full">
-            {todayDate}
+            {date || "বৃহস্পতিবার, ৮ অক্টোবর, ২০২৬"}
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -106,7 +191,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* আজ দাম বেড়েছে Section */}
       <div className="space-y-5">
         <div className="flex items-center gap-2">
           <span className="text-red-600 text-lg">▲</span>
@@ -117,69 +201,31 @@ const HeroSection = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-32 bg-gray-100 animate-pulse rounded-2xl border border-gray-200/60"
-              />
-            ))}
-          </div>
+          <SkeletonGrid />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {increasedProducts.map((product) => {
-              const displayUnit =
-                unitMap[product.unit] || `প্রতি ${product.unit}`;
+          <ProductGrid
+            products={increasedProducts}
+            isIncrease={true}
+          />
+        )}
+      </div>
 
-              const icon = product.image || product.categoryIcon || "📦";
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span className="text-emerald-600 text-lg">▼</span>
 
-              return (
-                <div
-                  key={product.id}
-                  className="bg-[#f8fbf9] border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-sm transition-shadow duration-200"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="text-3xl bg-white p-2 rounded-xl border border-gray-100 shadow-2xs">
-                      {icon}
-                    </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            আজ দাম কমেছে
+          </h2>
+        </div>
 
-                    <div>
-                      <h3 className="font-bold text-gray-900 text-base">
-                        {product.nameBn}
-                      </h3>
-
-                      <p className="text-xs text-gray-500 font-medium">
-                        {displayUnit}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-end justify-between pt-4 mt-2 border-t border-gray-200/40">
-                    <div>
-                      <span className="text-[11px] text-gray-500 block font-medium">
-                        আজকের দাম
-                      </span>
-
-                      <span className="text-lg font-extrabold text-gray-900">
-                        {toBengaliNumeral(product.today)} টাকা
-                      </span>
-                    </div>
-
-                    <div className="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded-md flex items-center gap-0.5">
-                      <span>▲</span>
-
-                      <span>
-                        {toBengaliNumeral(
-                          Math.abs(product.change?.pct || 0)
-                        )}
-                        %
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {loading ? (
+          <SkeletonGrid />
+        ) : (
+          <ProductGrid
+            products={decreasedProducts}
+            isIncrease={false}
+          />
         )}
       </div>
     </section>
