@@ -8,18 +8,22 @@ import NavLinks from "./NavLinks";
 import PriceTicker from "./PriceTicker";
 
 const Navbar = () => {
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState("");
 
   useEffect(() => {
-    const dt = new Date().toLocaleDateString("bn-BD", {
-      dateStyle: "full",
-    });
-    setDate(dt);
+    const updateDate = () => {
+      const currentDate = new Date().toLocaleDateString("bn-BD", {
+        dateStyle: "full",
+      });
+
+      setDate(currentDate);
+    };
+
+    updateDate();
   }, []);
 
   return (
-    <header className="w-full bg-white border-b border-gray-200">
-      
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-3">
@@ -32,11 +36,15 @@ const Navbar = () => {
                 alt="Logo"
               />
             </div>
+
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-black leading-tight">
                 বাজার দর
               </span>
-              <span className="text-xs text-gray-500">{date}</span>
+
+              <span className="text-xs text-gray-500">
+                {date}
+              </span>
             </div>
           </Link>
 
@@ -47,6 +55,7 @@ const Navbar = () => {
             >
               সাইন ইন
             </Link>
+
             <Link
               href="/signup"
               className="bg-[#00a651] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:bg-[#008f45] transition-all duration-200"
@@ -57,13 +66,11 @@ const Navbar = () => {
         </div>
       </div>
 
-    
       <div className="border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NavLinks />
         </div>
       </div>
-
 
       <PriceTicker />
     </header>
