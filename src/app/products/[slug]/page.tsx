@@ -279,7 +279,7 @@ function ProductDetailContent({
 
         <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-gray-100/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-4xl border border-gray-100 shadow-2xs flex-shrink-0">
+            <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-4xl border border-gray-100 shadow-2xs flex-shrink: 0">
               {product.image || "🍚"}
             </div>
 

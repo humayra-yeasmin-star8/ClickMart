@@ -122,7 +122,7 @@ const HeroSection = ({ date }: { date?: string }) => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-      <div className="bg-[#f2f7f4] rounded-3xl p-6 sm:p-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 border border-gray-100">
+      <div className="bg-white rounded-3xl p-6 sm:p-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 border border-gray-100">
         <div className="space-y-4 max-w-2xl text-left">
          <DateBadge/>
 

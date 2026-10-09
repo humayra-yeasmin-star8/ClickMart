@@ -40,7 +40,7 @@ const NavLinksContent = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 py-3 overflow-x-auto">
+      <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
@@ -52,7 +52,7 @@ const NavLinksContent = () => {
   }
 
   return (
-    <div className="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none">
+    <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto scrollbar-none">
       {categories.map((n) => {
         const href = `/category/${n.slug}`;
         const isActive = pathname === href;
