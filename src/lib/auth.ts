@@ -10,13 +10,25 @@ if (!mongoUri) {
 }
 
 const client = new MongoClient(mongoUri);
-
 const db = client.db("dailymart");
 
 export const auth = betterAuth({
-    emailAndPassword: { 
-    enabled: true, 
-  }, 
+  emailAndPassword: {
+    enabled: true,
+  },
+
+  socialProviders: {
+    google: {
+      clientId: process.env.BETTER_AUTH_GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.BETTER_AUTH_GOOGLE_CLIENT_SECRET as string,
+    },
+
+    github: {
+      clientId: process.env.BETTER_AUTH_GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.BETTER_AUTH_GITHUB_CLIENT_SECRET as string,
+    },
+  },
+
   database: mongodbAdapter(db, {
     client,
   }),

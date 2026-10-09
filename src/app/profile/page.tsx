@@ -8,12 +8,14 @@ import { Form, TextField, Label, Input, Button } from "@heroui/react";
 
 export default function ProfilePage() {
 const { data: session, isPending } = authClient.useSession();
+
 const [name, setName] = useState<string | null>(null);
 const [updating, setUpdating] = useState(false);
 const [signingOut, setSigningOut] = useState(false);
 
 const router = useRouter();
 
+// Fallback for cases where the client discovers an invalid session.
 useEffect(() => {
 if (!isPending && !session?.user) {
 router.replace("/signin");
@@ -29,14 +31,16 @@ if (signingOut) return;
 setSigningOut(true);
 
 try {
-  await authClient.signOut({
-    fetchOptions: {
-      onSuccess: () => {
-        router.replace("/signin");
-        router.refresh();
-      },
-    },
-  });
+  const { error } = await authClient.signOut();
+
+  if (error) {
+    alert("সাইন আউট করতে সমস্যা হয়েছে!");
+    setSigningOut(false);
+    return;
+  }
+
+  router.replace("/signin");
+  router.refresh();
 } catch (error) {
   console.error("Sign-out error:", error);
   alert("সাইন আউট করতে সমস্যা হয়েছে!");
@@ -142,9 +146,9 @@ return ( <div className="min-h-screen bg-[#f2f7f4] py-10 px-4 sm:px-6 lg:px-8"> 
 
           <Input
             value={displayName}
-            onChange={(value) => {
-              setName(typeof value === "string" ? value : "");
-            }}
+            onChange={(value) =>
+              setName(typeof value === "string" ? value : "")
+            }
             className="w-full px-4 py-3 bg-gray-50/60 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00a651] focus:bg-white transition-all"
           />
         </TextField>
