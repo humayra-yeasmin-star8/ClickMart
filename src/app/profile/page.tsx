@@ -15,7 +15,7 @@ const [signingOut, setSigningOut] = useState(false);
 
 const router = useRouter();
 
-// Fallback for cases where the client discovers an invalid session.
+
 useEffect(() => {
 if (!isPending && !session?.user) {
 router.replace("/signin");
