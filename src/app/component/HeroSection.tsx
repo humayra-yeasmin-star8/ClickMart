@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import heroImg from "/bazar-hero.png";
+import DateBadge from "./DateBadge";
 
 interface Product {
   id: number;
@@ -37,7 +40,7 @@ const unitMap: Record<string, string> = {
   piece: "প্রতি পিস",
 };
 
-const HeroSection = ({ date }: { date: string }) => {
+const HeroSection = ({ date }: { date?: string }) => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -121,17 +124,15 @@ const HeroSection = ({ date }: { date: string }) => {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       <div className="bg-[#f2f7f4] rounded-3xl p-6 sm:p-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 border border-gray-100">
         <div className="space-y-4 max-w-2xl text-left">
-          <div className="inline-block bg-[#e2f0e8] text-[#16A34A] text-xs font-semibold px-3 py-1.5 rounded-full">
-            {date}
-          </div>
+         <DateBadge/>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
             আজকের বাজারের দাম এক নজরে
           </h1>
 
           <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
             চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক
-            বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।
+            বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।
           </p>
 
           <div className="pt-2">
@@ -144,8 +145,14 @@ const HeroSection = ({ date }: { date: string }) => {
           </div>
         </div>
 
-        <div className="text-8xl sm:text-9xl select-none flex-shrink: 0">
-          🧺
+        <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex-shrink-0 flex items-center justify-center">
+          <Image
+            src={heroImg}
+            alt="Market Basket"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
       </div>
 
@@ -154,7 +161,7 @@ const HeroSection = ({ date }: { date: string }) => {
           <span className="text-red-600 text-lg">▲</span>
 
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-            আজ দাম বেড়েছে
+            আজ দাম বেড়েছে
           </h2>
         </div>
 
@@ -243,7 +250,7 @@ const HeroSection = ({ date }: { date: string }) => {
           <ProductGrid products={filteredAllProducts} />
         ) : (
           <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-            কোনো পণ্য পাওয়া যায়নি।
+            কোনো পণ্য পাওয়া যায়নি।
           </div>
         )}
       </div>
@@ -280,10 +287,10 @@ const ProductGrid = ({ products }: { products: Product[] }) => (
         <Link
           key={product.id}
           href={`/products/${product.slug}`}
-          className="bg-[#f8fbf9] border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition-all duration-200 cursor-pointer group"
+          className="bg-white border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start gap-3">
-            <div className="text-3xl bg-white p-2 rounded-xl border border-gray-100 shadow-2xs group-hover:scale-105 transition-transform">
+            <div className="text-3xl bg-gray-50 p-2 rounded-xl border border-gray-100 shadow-2xs group-hover:scale-105 transition-transform">
               {icon}
             </div>
 
@@ -298,7 +305,7 @@ const ProductGrid = ({ products }: { products: Product[] }) => (
             </div>
           </div>
 
-          <div className="flex items-end justify-between pt-4 mt-2 border-t border-gray-200/40">
+          <div className="flex items-end justify-between pt-4 mt-2 border-t border-gray-100">
             <div>
               <span className="text-[11px] text-gray-500 block font-medium">
                 আজকের দাম
@@ -321,7 +328,10 @@ const ProductGrid = ({ products }: { products: Product[] }) => (
               <span>{isUp ? "▲" : isDown ? "▼" : "—"}</span>
 
               <span>
-                {toBengaliNumeral(Math.abs(product.change?.pct || 0))}%
+                {toBengaliNumeral(
+                  Math.abs(product.change?.pct || 0)
+                )}
+                %
               </span>
             </div>
           </div>

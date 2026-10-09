@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,7 +11,7 @@ interface Category {
   icon: string;
 }
 
-const NavLinks = () => {
+const NavLinksContent = () => {
   const pathname = usePathname();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +22,11 @@ const NavLinks = () => {
         const res = await fetch(
           "https://api.api-store.workers.dev/api/bazardor/categories"
         );
+
         const data = await res.json();
-        
+
         const items = Array.isArray(data) ? data : data.data || [];
+
         setCategories(items);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -38,11 +40,11 @@ const NavLinks = () => {
 
   if (loading) {
     return (
-      <div className="flex  items-center justify-between space-x-7 py-3 overflow-x-auto">
+      <div className="flex items-center gap-2 py-3 overflow-x-auto">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="h-6 w-16 bg-gray-200 animate-pulse rounded-md"
+            className="h-8 w-20 bg-gray-200 animate-pulse rounded-full"
           />
         ))}
       </div>
@@ -50,7 +52,7 @@ const NavLinks = () => {
   }
 
   return (
-    <div className="flex items-center justify-center space-x-6 sm:space-x-8 overflow-x-auto py-3 scrollbar-none">
+    <div className="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none">
       {categories.map((n) => {
         const href = `/category/${n.slug}`;
         const isActive = pathname === href;
@@ -59,18 +61,35 @@ const NavLinks = () => {
           <Link
             key={n.id || n.slug}
             href={href}
-            className={`flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold transition-colors ${
+            className={`group px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all duration-200 ${
               isActive
-                ? "text-emerald-600 font-bold"
-                : "text-gray-700 hover:text-emerald-600"
+                ? "bg-[#00a651] text-white shadow-xs"
+                : "bg-transparent text-gray-700 hover:bg-[#00a651] hover:text-white"
             }`}
           >
-            <span className="text-base">{n.icon}</span>
-            <span className="text-gray-900 font-medium">{n.nameBn}</span>
+            <span className="text-sm">{n.icon}</span>
+
+            <span
+              className={
+                isActive
+                  ? "text-white"
+                  : "text-gray-800 group-hover:text-white"
+              }
+            >
+              {n.nameBn}
+            </span>
           </Link>
         );
       })}
     </div>
+  );
+};
+
+const NavLinks = () => {
+  return (
+    <Suspense fallback={<div className="h-12" />}>
+      <NavLinksContent />
+    </Suspense>
   );
 };
 
