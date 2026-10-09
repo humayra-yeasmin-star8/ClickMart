@@ -1,5 +1,5 @@
 "use client";
-
+import { notFound } from "next/navigation";
 import React, { useEffect, useState, use, Suspense } from "react";
 import Link from "next/link";
 

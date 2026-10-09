@@ -202,13 +202,18 @@ const HeroSection = ({ date }: { date?: string }) => {
           </div>
 
           <div className="relative w-full sm:w-72">
-            <input
-              type="text"
-              placeholder="পণ্য খুঁজুন..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-4 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#00a651] transition-colors"
-            />
+           <input
+  type="text"
+  placeholder="পণ্য খুঁজুন..."
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents page reload or accidental redirects
+    }
+  }}
+  className="w-full pl-4 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#00a651] transition-colors"
+/>
 
             <span className="absolute right-3 top-2.5 text-gray-400 text-sm">
               🔍
@@ -283,10 +288,13 @@ const ProductGrid = ({ products }: { products: Product[] }) => (
       const isDown =
         product.change?.dir === "down" || product.change?.pct < 0;
 
+    
+      const productHref = product.slug ? `/products/${product.slug}` : "#";
+
       return (
         <Link
-          key={product.id}
-          href={`/products/${product.slug}`}
+          key={product.id || product.slug}
+          href={productHref}
           className="bg-white border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start gap-3">
